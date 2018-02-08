@@ -11,9 +11,11 @@ public class Player : MonoBehaviour {
 	LineRenderer lineRenderer;
 
 	//player properties
-	float xSpeed = 5f;
+	float xSpeed = 0.2f;
 	float ySpeed = 10f;
+	public Vector2 startPos;
 	bool isOnGround = true;
+	bool alive = true;
 
 	//hook
 	GameObject player;
@@ -22,6 +24,7 @@ public class Player : MonoBehaviour {
 	Vector3 playerPosition;
 	Vector3 direction;
 	float distance;
+	float distanceRatio;
 	bool onHook = false;
 	float hookSize;
 	float hookSizeMax = 10;
@@ -29,7 +32,7 @@ public class Player : MonoBehaviour {
 
 
 	void Start () {
-		text = GameObject.Find ("Text");
+		startPos = transform.position;
 
 		myRigidbody = GetComponent<Rigidbody2D>();
 		player = this.gameObject;
@@ -43,31 +46,45 @@ public class Player : MonoBehaviour {
 
 		//hooks
 		if (Input.GetMouseButtonDown (0)) {
-			fire();
+			fireHook();
 		}
 		if (Input.GetMouseButtonDown (1)) {
 			deleteHook();
 		}
 		if (hookSize < hookSizeMax) {
-			shootHook ();
+			hookFly ();
 		}
 		drawHook ();
+
+		death ();
+
+		if (!alive) {
+			if (Input.GetKeyDown (KeyCode.Space)) {
+				transform.position = startPos;
+				myRigidbody.isKinematic = false;
+				alive = true;
+			}
+		}
 
 	}
 
 	void run() {
 		if (Input.GetKey (KeyCode.A) && !Input.GetKey (KeyCode.D)) {
 			if (isOnGround && !onHook) {
-				myRigidbody.velocity = new Vector2 (-xSpeed, myRigidbody.velocity.y);
+				if (myRigidbody.velocity.x > -20) {
+					myRigidbody.velocity += new Vector2 (-xSpeed, 0);
+				}
 			} else {
-				myRigidbody.velocity = new Vector2 (myRigidbody.velocity.x - xSpeed/100, myRigidbody.velocity.y);
+				myRigidbody.velocity = new Vector2 (myRigidbody.velocity.x - xSpeed/10, myRigidbody.velocity.y);
 			}
 		}
 		if (Input.GetKey (KeyCode.D) && !Input.GetKey (KeyCode.A)) {
 			if (isOnGround && !onHook) {
-				myRigidbody.velocity = new Vector2 (xSpeed, myRigidbody.velocity.y);
+				if (myRigidbody.velocity.x < 20) {
+					myRigidbody.velocity += new Vector2 (xSpeed, 0);
+				}
 			} else {
-				myRigidbody.velocity = new Vector2 (myRigidbody.velocity.x + xSpeed/100, myRigidbody.velocity.y);
+				myRigidbody.velocity = new Vector2 (myRigidbody.velocity.x + xSpeed/10, myRigidbody.velocity.y);
 			}
 		}
 	}
@@ -78,9 +95,9 @@ public class Player : MonoBehaviour {
 				isOnGround = false;
 			}
 			if (Input.GetKey (KeyCode.W)) {
-				myRigidbody.gravityScale = 0.4f;
+				myRigidbody.gravityScale = 0.8f;
 			} else {
-				myRigidbody.gravityScale = 0.5f;
+				myRigidbody.gravityScale = 1f;
 			}
 	}
 
@@ -98,18 +115,24 @@ public class Player : MonoBehaviour {
 		}
 	}
 
-	void fire() {
+	void fireHook() {
 		hookSize = 0;
-	}
-
-	void shootHook() {
 		GameObject.DestroyImmediate (hook);
-		hookSize += 1;
 		mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		playerPosition = player.transform.position;
 		direction = mousePosition - playerPosition;
 		distance = Vector3.Distance (mousePosition + new Vector3 (0,0,10), playerPosition) + 2;
-		RaycastHit2D hit = Physics2D.Raycast (player.transform.position, direction, distance * hookSize/hookSizeMax);
+		if (distance > 20) {
+			distanceRatio = 20 / distance;
+			distance = 20;
+		} else {
+			distanceRatio = 1f;
+		}
+	}
+
+	void hookFly(){
+	hookSize += 1;
+	RaycastHit2D hit = Physics2D.Raycast (player.transform.position, direction, distance * hookSize/hookSizeMax);
 		if (hit.collider != null) {
 			SpringJoint2D newHook = player.AddComponent<SpringJoint2D> ();
 			newHook.enableCollision = true;
@@ -128,20 +151,27 @@ public class Player : MonoBehaviour {
 	}
 
 	void drawHook(){
+		lineRenderer.SetWidth(0.1f, 0.1f);
 		if (hook != null) {
 			lineRenderer.enabled = true;
-			lineRenderer.SetVertexCount (2);
 			lineRenderer.SetPosition (0, player.transform.position);
 			lineRenderer.SetPosition (1, hook.connectedAnchor);
 			onHook = true;
 		} else if (hookSize < hookSizeMax) {
 				lineRenderer.enabled = true;
-				lineRenderer.SetVertexCount (2);
 				lineRenderer.SetPosition (0, player.transform.position);
-				lineRenderer.SetPosition (1, Vector3.Lerp(playerPosition,mousePosition,hookSize/hookSizeMax));
+				lineRenderer.SetPosition (1, Vector3.Lerp(playerPosition, mousePosition, distanceRatio * hookSize / hookSizeMax));
 		} else {
 			lineRenderer.enabled = false;
 			onHook = false;
+		}
+	}
+
+	void death(){
+		if (transform.position.y < SceneManager.levelMinHeight) {
+			myRigidbody.velocity = new Vector3 (0, 0, 0);
+			myRigidbody.isKinematic = true;
+			alive = false;
 		}
 	}
 }
