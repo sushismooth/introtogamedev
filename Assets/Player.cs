@@ -19,6 +19,7 @@ public class Player : MonoBehaviour {
 
 	//hook
 	GameObject player;
+	public LayerMask raycastLayerMask;
 	SpringJoint2D hook;
 	Vector3 mousePosition;
 	Vector3 playerPosition;
@@ -33,7 +34,7 @@ public class Player : MonoBehaviour {
 
 	void Start () {
 		startPos = transform.position;
-
+		raycastLayerMask = LayerMask.GetMask ("Floor");
 		myRigidbody = GetComponent<Rigidbody2D>();
 		player = this.gameObject;
 		lineRenderer = GetComponent<LineRenderer> ();
@@ -56,14 +57,12 @@ public class Player : MonoBehaviour {
 		}
 		drawHook ();
 
-		death ();
+		//if (transform.position.y < SceneManagement.minHeight) {
+		//	death ();
+		//}
 
-		if (!alive) {
-			if (Input.GetKeyDown (KeyCode.Space)) {
-				transform.position = startPos;
-				myRigidbody.isKinematic = false;
-				alive = true;
-			}
+		if (Input.GetKeyDown (KeyCode.Space)) {
+			respawn ();
 		}
 
 	}
@@ -125,15 +124,15 @@ public class Player : MonoBehaviour {
 		if (distance > 20) {
 			distanceRatio = 20 / distance;
 			distance = 20;
-		} else {
+		} else {	
 			distanceRatio = 1f;
 		}
 	}
 
 	void hookFly(){
 	hookSize += 1;
-	RaycastHit2D hit = Physics2D.Raycast (player.transform.position, direction, distance * hookSize/hookSizeMax);
-		if (hit.collider != null) {
+	RaycastHit2D hit = Physics2D.Raycast (player.transform.position, direction, distance * hookSize/hookSizeMax, raycastLayerMask);
+		if (hit.collider != null && hit.collider.gameObject.tag == "Floor") {
 			SpringJoint2D newHook = player.AddComponent<SpringJoint2D> ();
 			newHook.enableCollision = true;
 			newHook.frequency = 1f;
@@ -168,10 +167,15 @@ public class Player : MonoBehaviour {
 	}
 
 	void death(){
-		if (transform.position.y < SceneManager.levelMinHeight) {
 			myRigidbody.velocity = new Vector3 (0, 0, 0);
 			myRigidbody.isKinematic = true;
 			alive = false;
-		}
+	}
+
+	void respawn(){
+				myRigidbody.velocity = new Vector3 (0, 0, 0);
+				transform.position = startPos;
+				myRigidbody.isKinematic = false;
+				alive = true;
 	}
 }
