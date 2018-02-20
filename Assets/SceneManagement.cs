@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class SceneManagement : MonoBehaviour {
-	public static int minHeight;
+	public static int minHeight = -100;
 	public static int level;
 	static List<string> levelNames = new List<string> ();
 	static List<int> levelMinHeights = new List<int> ();
@@ -20,6 +20,12 @@ public class SceneManagement : MonoBehaviour {
 
 		levelNames.Add ("Level 2");
 		levelMinHeights.Add (-35);
+
+		levelNames.Add ("Level 3");
+		levelMinHeights.Add (-35);
+
+		levelNames.Add ("Level 4");
+		levelMinHeights.Add (-100);
 
 		level = 0;
 		nextLevel ();

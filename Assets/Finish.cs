@@ -15,9 +15,10 @@ public class Finish : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D collisionInfo){
-		Debug.Log ("next level");
+		Debug.Log ("next level");	
 		if (collisionInfo.name == "Player") {
 			SceneManagement.nextLevel ();
+			Destroy (this);
 		}
 	}
 }

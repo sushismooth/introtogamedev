@@ -9,6 +9,7 @@ public class Player : MonoBehaviour {
 	//unity components
 	Rigidbody2D myRigidbody;
 	LineRenderer lineRenderer;
+	SpriteRenderer mySpriteRenderer;
 
 	//player properties
 	float xSpeed = 0.2f;
@@ -36,6 +37,7 @@ public class Player : MonoBehaviour {
 		startPos = transform.position;
 		raycastLayerMask = LayerMask.GetMask ("Floor");
 		myRigidbody = GetComponent<Rigidbody2D>();
+		mySpriteRenderer = GetComponent<SpriteRenderer>();
 		player = this.gameObject;
 		lineRenderer = GetComponent<LineRenderer> ();
 	}
@@ -57,14 +59,13 @@ public class Player : MonoBehaviour {
 		}
 		drawHook ();
 
-		//if (transform.position.y < SceneManagement.minHeight) {
-		//	death ();
-		//}
-
+		//death
+		if (transform.position.y < SceneManagement.minHeight) {
+			death ();
+		}
 		if (Input.GetKeyDown (KeyCode.Space)) {
 			respawn ();
 		}
-
 	}
 
 	void run() {
@@ -167,15 +168,24 @@ public class Player : MonoBehaviour {
 	}
 
 	void death(){
-			myRigidbody.velocity = new Vector3 (0, 0, 0);
-			myRigidbody.isKinematic = true;
-			alive = false;
+		myRigidbody.velocity = new Vector3 (0, 0, 0);
+		myRigidbody.isKinematic = true;
+		alive = false;
+		mySpriteRenderer.color = new Color (1,0,0);
 	}
 
 	void respawn(){
-				myRigidbody.velocity = new Vector3 (0, 0, 0);
-				transform.position = startPos;
-				myRigidbody.isKinematic = false;
-				alive = true;
+		myRigidbody.velocity = new Vector3 (0, 0, 0);
+		transform.position = startPos;
+		myRigidbody.isKinematic = false;
+		alive = true;
+		mySpriteRenderer.color = new Color (1,1,1);
+	}
+
+	void onCollisionEnter2D (Collision2D CollisionInfo){
+		Debug.Log (CollisionInfo.gameObject);
+		if (CollisionInfo.gameObject.tag == "Trap") {
+			death ();
+		}
 	}
 }
