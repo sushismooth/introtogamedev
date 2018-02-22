@@ -44,8 +44,10 @@ public class Player : MonoBehaviour {
 
 	void Update () {
 		//movement
-		run();
-		jump();
+		if (alive) {
+			run ();
+			jump ();
+		}
 
 		//hooks
 		if (Input.GetMouseButtonDown (0)) {
@@ -104,7 +106,15 @@ public class Player : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D collisionInfo){
 		if (collisionInfo.gameObject.tag == "Floor") {
 			isOnGround = true;
-			Debug.Log (collisionInfo);
+		}
+		if (collisionInfo.gameObject.tag == "Trap") {
+			Debug.Log ("hit trap");
+			death ();
+		}
+		if (collisionInfo.gameObject.tag == "Boost") {
+			xSpeed = 0.3f;
+		} else {
+			xSpeed = 0.2f;
 		}
 	}
 
@@ -180,12 +190,5 @@ public class Player : MonoBehaviour {
 		myRigidbody.isKinematic = false;
 		alive = true;
 		mySpriteRenderer.color = new Color (1,1,1);
-	}
-
-	void onCollisionEnter2D (Collision2D CollisionInfo){
-		Debug.Log (CollisionInfo.gameObject);
-		if (CollisionInfo.gameObject.tag == "Trap") {
-			death ();
-		}
 	}
 }

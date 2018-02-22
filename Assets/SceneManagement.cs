@@ -28,7 +28,8 @@ public class SceneManagement : MonoBehaviour {
 		levelMinHeights.Add (-100);
 
 		level = 0;
-		nextLevel ();
+		level++;
+		loadLevel ();
 
 	}
 
@@ -36,10 +37,8 @@ public class SceneManagement : MonoBehaviour {
 		
 	}
 
-	public static void nextLevel (){
-		level++;
+	public static void loadLevel (){
 		Debug.Log (levelNames [level]);
-		Debug.Log(levelMinHeights[level]);
 		SceneManager.LoadScene (levelNames [level]);
 		minHeight = levelMinHeights[level];
 

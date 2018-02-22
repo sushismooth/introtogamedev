@@ -405,6 +405,11 @@ Prefab:
       propertyPath: m_RootOrder
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 50484502978066654, guid: 76dcef6608f1d594ba5a0bec308e93cd,
+        type: 2}
+      propertyPath: m_BodyType
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 76dcef6608f1d594ba5a0bec308e93cd, type: 2}
   m_IsPrefabParent: 0
@@ -676,8 +681,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1983689738}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.55, y: -39.12, z: 0}
-  m_LocalScale: {x: 5.689617, y: 18.233547, z: 1}
+  m_LocalPosition: {x: 0.4, y: -38.9, z: 0}
+  m_LocalScale: {x: 19.263287, y: 18.233547, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 9
@@ -691,7 +696,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}

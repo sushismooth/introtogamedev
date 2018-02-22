@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Floor
   - Trap
+  - Boost
   layers:
   - Default
   - TransparentFX
@@ -17,7 +18,7 @@ TagManager:
   - 
   - Floor
   - Traps
-  - 
+  - Boosts
   - 
   - 
   - 
