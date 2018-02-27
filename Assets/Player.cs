@@ -192,5 +192,6 @@ public class Player : MonoBehaviour {
 		alive = true;
 		mySpriteRenderer.color = new Color (1,1,1);
 		GameObject.DestroyImmediate (hook);
+		PointTrackerScript.resetPoints ();
 	}
 }

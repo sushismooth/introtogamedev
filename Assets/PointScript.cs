@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Finish : MonoBehaviour {
+public class PointScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
@@ -16,8 +16,7 @@ public class Finish : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D collisionInfo){
 		if (collisionInfo.name == "Player" && collisionInfo.GetType() == typeof(CircleCollider2D)) {
-			SceneManagement.level++;
-			SceneManagement.loadLevel ();
+			PointTrackerScript.addPoint ();
 			Destroy (this.gameObject);
 		}
 	}
