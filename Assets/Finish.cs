@@ -15,8 +15,8 @@ public class Finish : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D collisionInfo){
-		Debug.Log ("next level");	
-		if (collisionInfo.name == "Player") {
+		Debug.Log (collisionInfo.GetType());
+		if (collisionInfo.name == "Player" && collisionInfo.GetType() == typeof(CircleCollider2D)) {
 			SceneManagement.level++;
 			SceneManagement.loadLevel ();
 			Destroy (this.gameObject);

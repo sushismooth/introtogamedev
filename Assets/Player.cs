@@ -14,6 +14,7 @@ public class Player : MonoBehaviour {
 	//player properties
 	float xSpeed = 0.2f;
 	float ySpeed = 10f;
+	float gravity = 1f;
 	public Vector2 startPos;
 	bool isOnGround = true;
 	bool alive = true;
@@ -22,10 +23,12 @@ public class Player : MonoBehaviour {
 	GameObject player;
 	public LayerMask raycastLayerMask;
 	SpringJoint2D hook;
-	Vector3 mousePosition;
+	public Vector3 mousePosition;
+	public Vector3 anchorPosition;
 	Vector3 playerPosition;
-	Vector3 direction;
-	float distance;
+	public Vector3 direction;
+	public float slopeDistance;
+	public float distance;
 	float distanceRatio;
 	bool onHook = false;
 	float hookSize;
@@ -53,7 +56,7 @@ public class Player : MonoBehaviour {
 		if (Input.GetMouseButtonDown (0)) {
 			fireHook();
 		}
-		if (Input.GetMouseButtonDown (1)) {
+		if (Input.GetMouseButtonUp (0)) {
 			deleteHook();
 		}
 		if (hookSize < hookSizeMax) {
@@ -65,7 +68,7 @@ public class Player : MonoBehaviour {
 		if (transform.position.y < SceneManagement.minHeight) {
 			death ();
 		}
-		if (Input.GetKeyDown (KeyCode.Space)) {
+		if (Input.GetKeyDown (KeyCode.R)) {
 			respawn ();
 		}
 	}
@@ -92,14 +95,14 @@ public class Player : MonoBehaviour {
 	}
 
 	void jump() {
-			if (Input.GetKeyDown (KeyCode.W) && isOnGround && !onHook) {
+		if ((Input.GetKeyDown (KeyCode.W) || Input.GetKeyDown (KeyCode.Space)) && isOnGround && !onHook) {
 				myRigidbody.velocity = new Vector2 (myRigidbody.velocity.x, ySpeed);
 				isOnGround = false;
 			}
 			if (Input.GetKey (KeyCode.W)) {
-				myRigidbody.gravityScale = 0.8f;
+				myRigidbody.gravityScale = 0.8f * gravity;
 			} else {
-				myRigidbody.gravityScale = 1f;
+				myRigidbody.gravityScale = gravity;
 			}
 	}
 
@@ -118,10 +121,9 @@ public class Player : MonoBehaviour {
 		}
 	}
 
-	void onTriggerExit2D(Collider2D collisionInfo){
+	void OnTriggerExit2D(Collider2D collisionInfo){
 		if (collisionInfo.gameObject.tag == "Floor") {
 			isOnGround = false;
-			Debug.Log (collisionInfo);
 		}
 	}
 
@@ -130,30 +132,27 @@ public class Player : MonoBehaviour {
 		GameObject.DestroyImmediate (hook);
 		mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		playerPosition = player.transform.position;
-		direction = mousePosition - playerPosition;
-		distance = Vector3.Distance (mousePosition + new Vector3 (0,0,10), playerPosition) + 2;
-		if (distance > 20) {
-			distanceRatio = 20 / distance;
-			distance = 20;
-		} else {	
-			distanceRatio = 1f;
-		}
+		distance = 20f;
+		
 	}
 
 	void hookFly(){
-	hookSize += 1;
-	RaycastHit2D hit = Physics2D.Raycast (player.transform.position, direction, distance * hookSize/hookSizeMax, raycastLayerMask);
-		if (hit.collider != null && hit.collider.gameObject.tag == "Floor") {
-			SpringJoint2D newHook = player.AddComponent<SpringJoint2D> ();
-			newHook.enableCollision = true;
-			newHook.frequency = 1f;
-			newHook.dampingRatio = 1;
-			newHook.connectedAnchor = hit.point;
-			newHook.enabled = true;
+		hookSize += 1;
+		direction = mousePosition - player.transform.position;
+		slopeDistance = Mathf.Sqrt(Mathf.Pow(direction.x,2) + Mathf.Pow (direction.y,2));
+		RaycastHit2D hit = Physics2D.Raycast (player.transform.position, direction, distance * hookSize/hookSizeMax, raycastLayerMask);
+			if (hit.collider != null && hit.collider.gameObject.tag == "Floor") {
+				SpringJoint2D newHook = player.AddComponent<SpringJoint2D> ();
+				newHook.enableCollision = true;
+				newHook.frequency = 1f;
+				newHook.dampingRatio = 1;
+				newHook.connectedAnchor = hit.point;
+				newHook.enabled = true;
 
-			GameObject.DestroyImmediate (hook);
-			hook = newHook;
-		}
+				GameObject.DestroyImmediate (hook);
+				hook = newHook;
+			hookSize = 10;
+			}
 	}
 
 	void deleteHook(){
@@ -168,9 +167,11 @@ public class Player : MonoBehaviour {
 			lineRenderer.SetPosition (1, hook.connectedAnchor);
 			onHook = true;
 		} else if (hookSize < hookSizeMax) {
-				lineRenderer.enabled = true;
-				lineRenderer.SetPosition (0, player.transform.position);
-				lineRenderer.SetPosition (1, Vector3.Lerp(playerPosition, mousePosition, distanceRatio * hookSize / hookSizeMax));
+			lineRenderer.enabled = true;
+			lineRenderer.SetPosition (0, player.transform.position);
+			anchorPosition = player.transform.position + (direction * (distance / slopeDistance));
+			anchorPosition = new Vector3 (anchorPosition.x, anchorPosition.y, -10);
+			lineRenderer.SetPosition (1, Vector3.Lerp(player.transform.position, anchorPosition, hookSize / hookSizeMax));
 		} else {
 			lineRenderer.enabled = false;
 			onHook = false;
@@ -190,5 +191,6 @@ public class Player : MonoBehaviour {
 		myRigidbody.isKinematic = false;
 		alive = true;
 		mySpriteRenderer.color = new Color (1,1,1);
+		GameObject.DestroyImmediate (hook);
 	}
 }
