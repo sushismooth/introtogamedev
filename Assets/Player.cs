@@ -56,7 +56,7 @@ public class Player : MonoBehaviour {
 		if (Input.GetMouseButtonDown (0)) {
 			fireHook();
 		}
-		if (Input.GetMouseButtonUp (0)) {
+		if (!Input.GetMouseButton (0)) {
 			deleteHook();
 		}
 		if (hookSize < hookSizeMax) {
@@ -107,7 +107,7 @@ public class Player : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D collisionInfo){
-		if (collisionInfo.gameObject.tag == "Floor") {
+		if (collisionInfo.gameObject.tag == "Floor" || collisionInfo.gameObject.tag == "Unhookable") {
 			isOnGround = true;
 		}
 		if (collisionInfo.gameObject.tag == "Trap") {
@@ -122,7 +122,7 @@ public class Player : MonoBehaviour {
 	}
 
 	void OnTriggerExit2D(Collider2D collisionInfo){
-		if (collisionInfo.gameObject.tag == "Floor") {
+		if (collisionInfo.gameObject.tag == "Floor" || collisionInfo.gameObject.tag == "Unhookable") {
 			isOnGround = false;
 		}
 	}
@@ -186,12 +186,15 @@ public class Player : MonoBehaviour {
 	}
 
 	void respawn(){
+		/*
 		myRigidbody.velocity = new Vector3 (0, 0, 0);
 		transform.position = startPos;
 		myRigidbody.isKinematic = false;
 		alive = true;
 		mySpriteRenderer.color = new Color (1,1,1);
 		GameObject.DestroyImmediate (hook);
-		PointTrackerScript.resetPoints ();
+		*/
+
+		SceneManagement.loadLevel ();
 	}
 }

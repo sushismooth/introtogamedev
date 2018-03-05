@@ -19,6 +19,7 @@ public class Finish : MonoBehaviour {
 			SceneManagement.level++;
 			SceneManagement.loadLevel ();
 			Destroy (this.gameObject);
+			PointTrackerScript.pointsThisLevel = 0;
 		}
 	}
 }
