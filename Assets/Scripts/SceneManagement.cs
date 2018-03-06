@@ -42,7 +42,5 @@ public class SceneManagement : MonoBehaviour {
 		SceneManager.LoadScene (levelNames [level]);
 		minHeight = levelMinHeights[level];
 		TimerScript.resetTimer ();
-		PointTrackerScript.resetPoints ();
-
 	}
 }

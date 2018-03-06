@@ -196,5 +196,6 @@ public class Player : MonoBehaviour {
 		*/
 
 		SceneManagement.loadLevel ();
+		PointTrackerScript.resetPoints ();
 	}
 }
