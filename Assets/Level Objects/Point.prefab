@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 212554471535921566}
   - component: {fileID: 114095127576793450}
   - component: {fileID: 58988304955770020}
+  - component: {fileID: 95941092559964094}
   m_Layer: 0
   m_Name: Point
   m_TagString: Untagged
@@ -57,6 +58,23 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
+--- !u!95 &95941092559964094
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1101771876837920}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4e4ac7fe51bd36f499b9dcd527013d4f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!114 &114095127576793450
 MonoBehaviour:
   m_ObjectHideFlags: 1

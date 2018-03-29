@@ -10,6 +10,7 @@ public class Player : MonoBehaviour {
 	Rigidbody2D myRigidbody;
 	LineRenderer lineRenderer;
 	SpriteRenderer mySpriteRenderer;
+	Animator myAnimator;
 
 	//player properties
 	float xSpeed = 0.2f;
@@ -17,6 +18,7 @@ public class Player : MonoBehaviour {
 	float gravity = 1f;
 	public Vector2 startPos;
 	bool isOnGround = true;
+	bool isRunning = false;
 	bool alive = true;
 
 	//hook
@@ -41,6 +43,7 @@ public class Player : MonoBehaviour {
 		raycastLayerMask = LayerMask.GetMask ("Floor");
 		myRigidbody = GetComponent<Rigidbody2D>();
 		mySpriteRenderer = GetComponent<SpriteRenderer>();
+		myAnimator = GetComponent<Animator>();
 		player = this.gameObject;
 		lineRenderer = GetComponent<LineRenderer> ();
 	}
@@ -71,10 +74,14 @@ public class Player : MonoBehaviour {
 		if (Input.GetKeyDown (KeyCode.R)) {
 			respawn ();
 		}
+
+		//animation
+		animation ();
 	}
 
 	void run() {
 		if (Input.GetKey (KeyCode.A) && !Input.GetKey (KeyCode.D)) {
+			mySpriteRenderer.flipX = true;
 			if (isOnGround && !onHook) {
 				if (myRigidbody.velocity.x > -20) {
 					myRigidbody.velocity += new Vector2 (-xSpeed, 0);
@@ -84,6 +91,7 @@ public class Player : MonoBehaviour {
 			}
 		}
 		if (Input.GetKey (KeyCode.D) && !Input.GetKey (KeyCode.A)) {
+			mySpriteRenderer.flipX = false;
 			if (isOnGround && !onHook) {
 				if (myRigidbody.velocity.x < 20) {
 					myRigidbody.velocity += new Vector2 (xSpeed, 0);
@@ -91,6 +99,12 @@ public class Player : MonoBehaviour {
 			} else {
 				myRigidbody.velocity = new Vector2 (myRigidbody.velocity.x + xSpeed/10, myRigidbody.velocity.y);
 			}
+		}
+
+		if ((Input.GetKey (KeyCode.A) || Input.GetKey (KeyCode.D)) && !(Input.GetKey (KeyCode.A) && Input.GetKey (KeyCode.D))) {
+			isRunning = true;
+		} else {
+			isRunning = false;
 		}
 	}
 
@@ -170,7 +184,7 @@ public class Player : MonoBehaviour {
 			lineRenderer.enabled = true;
 			lineRenderer.SetPosition (0, player.transform.position);
 			anchorPosition = player.transform.position + (direction * (distance / slopeDistance));
-			anchorPosition = new Vector3 (anchorPosition.x, anchorPosition.y, -10);
+			anchorPosition = new Vector3 (anchorPosition.x, anchorPosition.y, 1);
 			lineRenderer.SetPosition (1, Vector3.Lerp(player.transform.position, anchorPosition, hookSize / hookSizeMax));
 		} else {
 			lineRenderer.enabled = false;
@@ -197,5 +211,16 @@ public class Player : MonoBehaviour {
 
 		SceneManagement.loadLevel ();
 		PointTrackerScript.resetPoints ();
+	}
+
+	void animation(){
+		if (!isOnGround) {
+			myAnimator.Play ("player_fly");
+		} else 
+			if (isRunning){
+			myAnimator.Play ("player_walk");
+			} else {
+				myAnimator.Play ("player_idle");
+			}
 	}
 }
