@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class Finish : MonoBehaviour {
 
+	GameObject fade;
+
 	// Use this for initialization
 	void Start () {
-		
+		fade = GameObject.Find ("Fade");
 	}
 	
 	// Update is called once per frame
@@ -18,8 +20,9 @@ public class Finish : MonoBehaviour {
 		if (collisionInfo.name == "Player" && collisionInfo.GetType() == typeof(CircleCollider2D)) {
 			SceneManagement.level++;
 			SceneManagement.loadLevel ();
-			Destroy (this.gameObject);
+			//Destroy (this.gameObject);
 			PointTrackerScript.pointsThisLevel = 0;
+			fade.GetComponent<Animator> ().SetTrigger("Start");
 		}
 	}
 }

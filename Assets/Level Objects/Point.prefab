@@ -86,6 +86,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf7ec74eeaede8f4db1570b67c173b48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  soundEffect: {fileID: 1589802718143150, guid: 0c384bbb4b4ac8f47add218235c64720,
+    type: 2}
 --- !u!212 &212554471535921566
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -120,8 +122,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 33d1a3c0755ce3248b6d8517b685a63e, type: 3}
-  m_Color: {r: 0.9862069, g: 1, b: 0, a: 1}
+  m_Sprite: {fileID: 21300006, guid: 80394b8a6c225b0499cdc9eb16ed5e8d, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
 
-	GameObject text;
-
 	//unity components
 	Rigidbody2D myRigidbody;
 	LineRenderer lineRenderer;
 	SpriteRenderer mySpriteRenderer;
 	Animator myAnimator;
+	AudioSource myAudioSource;
 
 	//player properties
-	float xSpeed = 0.2f;
-	float ySpeed = 10f;
+	public float xSpeed = 0.2f;
+	public float ySpeed = 10f;
+	public float maxSpeed = 20f;
 	float gravity = 1f;
 	public Vector2 startPos;
 	bool isOnGround = true;
@@ -27,23 +27,28 @@ public class Player : MonoBehaviour {
 	SpringJoint2D hook;
 	public Vector3 mousePosition;
 	public Vector3 anchorPosition;
-	Vector3 playerPosition;
 	public Vector3 direction;
 	public float slopeDistance;
 	public float distance;
 	float distanceRatio;
 	bool onHook = false;
 	float hookSize;
-	float hookSizeMax = 10;
+	float hookSizeMax = 10f;
+	float lineWidth = 0.1f;
+
+	//sound effects
+	public AudioClip jumpSound;
+	public AudioClip hookBreak;
 
 
 
 	void Start () {
 		startPos = transform.position;
-		raycastLayerMask = LayerMask.GetMask ("Floor");
+		raycastLayerMask = LayerMask.GetMask ("Floor") | LayerMask.GetMask ("Unhookable") | LayerMask.GetMask ("Traps");
 		myRigidbody = GetComponent<Rigidbody2D>();
 		mySpriteRenderer = GetComponent<SpriteRenderer>();
 		myAnimator = GetComponent<Animator>();
+		myAudioSource = GetComponent<AudioSource>();
 		player = this.gameObject;
 		lineRenderer = GetComponent<LineRenderer> ();
 	}
@@ -76,14 +81,14 @@ public class Player : MonoBehaviour {
 		}
 
 		//animation
-		animation ();
+		animator ();
 	}
 
 	void run() {
 		if (Input.GetKey (KeyCode.A) && !Input.GetKey (KeyCode.D)) {
 			mySpriteRenderer.flipX = true;
 			if (isOnGround && !onHook) {
-				if (myRigidbody.velocity.x > -20) {
+				if (myRigidbody.velocity.x > -maxSpeed) {
 					myRigidbody.velocity += new Vector2 (-xSpeed, 0);
 				}
 			} else {
@@ -93,7 +98,7 @@ public class Player : MonoBehaviour {
 		if (Input.GetKey (KeyCode.D) && !Input.GetKey (KeyCode.A)) {
 			mySpriteRenderer.flipX = false;
 			if (isOnGround && !onHook) {
-				if (myRigidbody.velocity.x < 20) {
+				if (myRigidbody.velocity.x < maxSpeed) {
 					myRigidbody.velocity += new Vector2 (xSpeed, 0);
 				}
 			} else {
@@ -110,8 +115,11 @@ public class Player : MonoBehaviour {
 
 	void jump() {
 		if ((Input.GetKeyDown (KeyCode.W) || Input.GetKeyDown (KeyCode.Space)) && isOnGround && !onHook) {
-				myRigidbody.velocity = new Vector2 (myRigidbody.velocity.x, ySpeed);
-				isOnGround = false;
+			myRigidbody.velocity = new Vector2 (myRigidbody.velocity.x, ySpeed);
+			isOnGround = false;
+			myAudioSource.volume = 1.0f;
+			myAudioSource.clip = jumpSound;
+			myAudioSource.Play ();
 			}
 			if (Input.GetKey (KeyCode.W)) {
 				myRigidbody.gravityScale = 0.8f * gravity;
@@ -130,8 +138,7 @@ public class Player : MonoBehaviour {
 		}
 		if (collisionInfo.gameObject.tag == "Boost") {
 			xSpeed = 0.3f;
-		} else {
-			xSpeed = 0.2f;
+			maxSpeed = 30;
 		}
 	}
 
@@ -139,13 +146,16 @@ public class Player : MonoBehaviour {
 		if (collisionInfo.gameObject.tag == "Floor" || collisionInfo.gameObject.tag == "Unhookable") {
 			isOnGround = false;
 		}
+		if (collisionInfo.gameObject.tag == "Boost") {
+			xSpeed = 0.2f;
+			maxSpeed = 20;
+		}
 	}
 
 	void fireHook() {
 		hookSize = 0;
 		GameObject.DestroyImmediate (hook);
 		mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		playerPosition = player.transform.position;
 		distance = 20f;
 		
 	}
@@ -155,18 +165,25 @@ public class Player : MonoBehaviour {
 		direction = mousePosition - player.transform.position;
 		slopeDistance = Mathf.Sqrt(Mathf.Pow(direction.x,2) + Mathf.Pow (direction.y,2));
 		RaycastHit2D hit = Physics2D.Raycast (player.transform.position, direction, distance * hookSize/hookSizeMax, raycastLayerMask);
-			if (hit.collider != null && hit.collider.gameObject.tag == "Floor") {
-				SpringJoint2D newHook = player.AddComponent<SpringJoint2D> ();
-				newHook.enableCollision = true;
-				newHook.frequency = 1f;
-				newHook.dampingRatio = 1;
-				newHook.connectedAnchor = hit.point;
-				newHook.enabled = true;
+			if (hit.collider != null) {
+				if (hit.collider.gameObject.tag == "Floor") {
+					SpringJoint2D newHook = player.AddComponent<SpringJoint2D> ();
+					newHook.enableCollision = true;
+					newHook.frequency = 1f;
+					newHook.dampingRatio = 1;
+					newHook.connectedAnchor = hit.point;
+					newHook.enabled = true;
 
-				GameObject.DestroyImmediate (hook);
-				hook = newHook;
-			hookSize = 10;
-			}
+					GameObject.DestroyImmediate (hook);
+					hook = newHook;
+					hookSize = 10;
+				} else {
+				myAudioSource.clip = hookBreak;
+				myAudioSource.volume = 0.1f;
+				myAudioSource.Play ();
+				hookSize = hookSizeMax;
+				}
+		}
 	}
 
 	void deleteHook(){
@@ -174,7 +191,9 @@ public class Player : MonoBehaviour {
 	}
 
 	void drawHook(){
-		lineRenderer.SetWidth(0.1f, 0.1f);
+		//lineRenderer.SetWidth(0.1f, 0.1f);
+		lineRenderer.startWidth = lineWidth;
+		lineRenderer.endWidth = lineWidth;
 		if (hook != null) {
 			lineRenderer.enabled = true;
 			lineRenderer.SetPosition (0, player.transform.position);
@@ -213,7 +232,7 @@ public class Player : MonoBehaviour {
 		PointTrackerScript.resetPoints ();
 	}
 
-	void animation(){
+	void animator(){
 		if (!isOnGround) {
 			myAnimator.Play ("player_fly");
 		} else 

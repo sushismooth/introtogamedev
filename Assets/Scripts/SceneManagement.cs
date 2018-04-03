@@ -28,8 +28,6 @@ public class SceneManagement : MonoBehaviour {
 		levelMinHeights.Add (-100);
 
 		level = 0;
-		level++;
-		loadLevel ();
 
 	}
 
