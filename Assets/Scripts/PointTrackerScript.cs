@@ -6,14 +6,17 @@ using UnityEngine.UI;
 public class PointTrackerScript : MonoBehaviour {
 	public static int points;
 	public static int pointsThisLevel;
+	GameObject pointText;
+
 	// Use this for initialization
 	void Start () {
-		DontDestroyOnLoad (this.gameObject);
+		//DontDestroyOnLoad (this.gameObject);
+		pointText = GameObject.Find ("PointText");
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		GameObject.Find ("PointText").GetComponent<Text> ().text = "Points: " + points + " (" + pointsThisLevel + ")";
+		pointText.GetComponent<Text> ().text = "Points:" + points + "(" + pointsThisLevel + ")";
 	}
 
 	public static void addPoint (){

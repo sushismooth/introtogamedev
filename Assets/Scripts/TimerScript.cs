@@ -7,16 +7,20 @@ public class TimerScript : MonoBehaviour {
 
 	public static float timer;
 	public static float totalTime;
+	GameObject timerText;
 
 	// Use this for initialization
 	void Start () {
-		DontDestroyOnLoad (this.gameObject);
+		//DontDestroyOnLoad (this.gameObject);
+		timerText = GameObject.Find ("TimerText");
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		timer += Time.deltaTime;
-		GameObject.Find ("TimerText").GetComponent<Text> ().text = "Time: " + Mathf.Floor(timer*10f)/10f;
+		if (Player.alive) {
+			timer += Time.deltaTime;
+			timerText.GetComponent<Text> ().text = "Time:" + Mathf.Floor (timer * 10f) / 10f;
+		}
 	}
 
 	public static void resetTimer(){

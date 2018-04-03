@@ -214,7 +214,7 @@ GameObject:
   - component: {fileID: 1207072836}
   - component: {fileID: 1207072833}
   m_Layer: 8
-  m_Name: Tilemap
+  m_Name: Hookable Surfaces
   m_TagString: Floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -245,7 +245,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -1.9962444}
+  m_Offset: {x: 0, y: -2}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -256,7 +256,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 60, y: 3.9924889}
+  m_Size: {x: 60, y: 4}
   m_EdgeRadius: 0
 --- !u!483693784 &1207072834
 TilemapRenderer:
@@ -2874,7 +2874,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -23.00372}
+  m_Offset: {x: 0, y: -23}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -2885,7 +2885,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 60, y: 13.992559}
+  m_Size: {x: 60, y: 14}
   m_EdgeRadius: 0
 --- !u!1001 &1453991915
 Prefab:

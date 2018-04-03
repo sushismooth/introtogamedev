@@ -20,6 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4379406448483192}
   - component: {fileID: 82778623944395826}
+  - component: {fileID: 114276546942901534}
   m_Layer: 0
   m_Name: PointPickupAudio
   m_TagString: Untagged
@@ -50,7 +51,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 332b79b5490cbbd4f926a4ca8a3e5f31, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -120,3 +121,15 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!114 &114276546942901534
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1589802718143150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91419f23df1262e48a7f561d43a16644, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pointPickup: {fileID: 8300000, guid: 332b79b5490cbbd4f926a4ca8a3e5f31, type: 3}
