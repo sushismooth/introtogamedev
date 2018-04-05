@@ -19,7 +19,13 @@ public class TimerScript : MonoBehaviour {
 	void Update () {
 		if (Player.alive) {
 			timer += Time.deltaTime;
-			timerText.GetComponent<Text> ().text = "Time:" + Mathf.Floor (timer * 10f) / 10f;
+			//timerText.GetComponent<Text> ().text = "Time:" + Mathf.Floor (timer * 10f) / 10f;
+
+			if (timer > 9.9f) {
+				timerText.GetComponent<Text> ().text = "Time:" + timer.ToString ("0");
+			} else {
+				timerText.GetComponent<Text> ().text = "Time:" + timer.ToString ("0.0");
+			}
 		}
 	}
 
