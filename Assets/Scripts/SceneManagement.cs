@@ -4,13 +4,20 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class SceneManagement : MonoBehaviour {
-	public static int minHeight = -100;
-	public static int level;
-	static List<string> levelNames = new List<string> ();
-	static List<int> levelMinHeights = new List<int> ();
+	TimerScript timerScript;
+	public int minHeight = -100;
+	public int level;
+	public List<string> levelNames = new List<string> ();
+	public List<int> levelMinHeights = new List<int> ();
 
-	void Start () {
+	public AudioClip MenuBGM;
+	public AudioClip BGM1;
+	public AudioClip BGM2;
+	public AudioClip BGM3;
+
+	void Awake () {
 		DontDestroyOnLoad (this.gameObject);
+		timerScript = GameObject.Find ("Timer").GetComponent<TimerScript> ();
 
 		levelNames.Add ("Menu");
 		levelMinHeights.Add (0);
@@ -27,18 +34,52 @@ public class SceneManagement : MonoBehaviour {
 		levelNames.Add ("Level 4");
 		levelMinHeights.Add (-100);
 
-		level = 0;
+		levelNames.Add ("End");
+		levelMinHeights.Add (0);
 
+		level = 0;
 	}
 
 	void Update () {
 		
 	}
 
-	public static void loadLevel (){
-		Debug.Log (levelNames [level]);
+	public void loadLevel (){
+		Debug.Log (level);
+		Debug.Log(levelNames[level]);
 		SceneManager.LoadScene (levelNames [level]);
+		timerScript.resetTimer ();
 		minHeight = levelMinHeights[level];
-		TimerScript.resetTimer ();
+
+		//ChangeMusic ();
+		AudioSource backgroundMusic = GameObject.Find("BackgroundMusic").GetComponent<AudioSource> ();
+		switch (level) {
+		case 0:
+			backgroundMusic.clip = MenuBGM;
+			break;
+		case 1:
+			backgroundMusic.clip = BGM1;
+			break;
+		case 2:
+			backgroundMusic.clip = BGM2;
+			break;
+		case 3:
+			backgroundMusic.clip = BGM2;
+			break;
+		case 4:
+			backgroundMusic.clip = BGM3;
+			break;
+		case 5:
+			backgroundMusic.clip = MenuBGM;
+			break;
+		default:
+			break;
+		}
+		backgroundMusic.Play ();
+	}
+
+	public void UpdateMusicVolume(){
+		AudioSource backgroundMusic = GameObject.Find("BackgroundMusic").GetComponent<AudioSource> ();
+		backgroundMusic.volume = MusicSliderScript.musicVolume * 0.67f;
 	}
 }

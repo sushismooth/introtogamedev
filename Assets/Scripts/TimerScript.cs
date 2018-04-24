@@ -5,14 +5,18 @@ using UnityEngine.UI;
 
 public class TimerScript : MonoBehaviour {
 
-	public static float timer;
-	public static float totalTime;
-	GameObject timerText;
+	public float timer;
+	public float totalTime;
+	public float[] levelTimers = new float[6];
+	public GameObject timerText;
+	public GameObject resultsTimers;
+	public SceneManagement sceneScript;
 
 	// Use this for initialization
 	void Start () {
 		//DontDestroyOnLoad (this.gameObject);
 		timerText = GameObject.Find ("TimerText");
+		sceneScript = GameObject.Find ("SceneManagement").GetComponent<SceneManagement> ();
 	}
 	
 	// Update is called once per frame
@@ -22,14 +26,16 @@ public class TimerScript : MonoBehaviour {
 			//timerText.GetComponent<Text> ().text = "Time:" + Mathf.Floor (timer * 10f) / 10f;
 
 			if (timer > 9.9f) {
-				timerText.GetComponent<Text> ().text = "Time:" + timer.ToString ("0");
+				timerText.GetComponent<Text> ().text = ":" + timer.ToString ("0");
 			} else {
-				timerText.GetComponent<Text> ().text = "Time:" + timer.ToString ("0.0");
+				timerText.GetComponent<Text> ().text = ":" + timer.ToString ("0.0");
 			}
 		}
 	}
 
-	public static void resetTimer(){
+	public void resetTimer(){
+		totalTime += timer;
+		levelTimers [sceneScript.level - 1] = timer;
 		timer = 0;
 	}
 }

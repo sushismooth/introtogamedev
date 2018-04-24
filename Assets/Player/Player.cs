@@ -10,6 +10,9 @@ public class Player : MonoBehaviour {
 	SpriteRenderer mySpriteRenderer;
 	Animator myAnimator;
 	AudioSource myAudioSource;
+	ParticleSystem myParticleSystem;
+	SceneManagement sceneScript;
+	PointTrackerScript pointScript;
 
 	//player properties
 	public float xSpeed = 0.2f;
@@ -43,6 +46,7 @@ public class Player : MonoBehaviour {
 	//sound effects
 	public AudioClip jumpSound;
 	public AudioClip hookBreak;
+	public AudioClip land;
 
 
 
@@ -52,6 +56,9 @@ public class Player : MonoBehaviour {
 		myAnimator = GetComponent<Animator>();
 		myAudioSource = GetComponent<AudioSource>();
 		lineRenderer = GetComponent<LineRenderer> ();
+		myParticleSystem = GetComponent<ParticleSystem> ();
+		sceneScript = GameObject.Find ("SceneManagement").GetComponent<SceneManagement> ();
+		pointScript = GameObject.Find ("Point Tracker").GetComponent<PointTrackerScript> ();
 
 		player = this.gameObject;
 		startPos = transform.position;
@@ -67,7 +74,7 @@ public class Player : MonoBehaviour {
 	void Update () {
 		//movement
 		if (alive) {
-			run ();
+			//run ();
 			jump ();
 		}
 
@@ -84,7 +91,7 @@ public class Player : MonoBehaviour {
 		drawHook ();
 
 		//death
-		if (transform.position.y < SceneManagement.minHeight) {
+		if (transform.position.y < sceneScript.minHeight) {
 			death ();
 		}
 		if (Input.GetKeyDown (KeyCode.R)) {
@@ -93,6 +100,12 @@ public class Player : MonoBehaviour {
 
 		//animation
 		animator ();
+	}
+
+	void FixedUpdate(){
+		if (alive) {
+			run ();
+		}
 	}
 
 	void run() {
@@ -129,6 +142,7 @@ public class Player : MonoBehaviour {
 			myRigidbody.velocity = new Vector2 (myRigidbody.velocity.x, ySpeed);
 			isOnGround = false;
 			myAudioSource.volume = 0.8f * EffectsSliderScript.effectsVolume;
+			myAudioSource.pitch = 1f;
 			myAudioSource.clip = jumpSound;
 			myAudioSource.Play ();
 			}
@@ -142,6 +156,11 @@ public class Player : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D collisionInfo){
 		if (collisionInfo.gameObject.tag == "Floor" || collisionInfo.gameObject.tag == "Unhookable") {
 			isOnGround = true;
+			myAudioSource.clip = land;
+			myAudioSource.pitch = 0.5f;
+			myAudioSource.volume = 0.1f  * EffectsSliderScript.effectsVolume;
+			myAudioSource.Play ();
+			myParticleSystem.Play ();
 		}
 		if (collisionInfo.gameObject.tag == "Trap") {
 			Debug.Log ("hit trap");
@@ -163,6 +182,13 @@ public class Player : MonoBehaviour {
 		}
 	}
 
+	void OnCollisionEnter2D(Collision2D collisionInfo){
+		if (collisionInfo.gameObject.tag == "Trap") {
+			Debug.Log ("hit trap");
+			death ();
+		}
+	}
+
 	void fireHook() {
 		hookSize = 0;
 		GameObject.DestroyImmediate (hook);
@@ -176,20 +202,25 @@ public class Player : MonoBehaviour {
 		direction = mousePosition - player.transform.position;
 		slopeDistance = Mathf.Sqrt(Mathf.Pow(direction.x,2) + Mathf.Pow (direction.y,2));
 		RaycastHit2D hit = Physics2D.Raycast (player.transform.position, direction, distance * hookSize/hookSizeMax, raycastLayerMask);
-			if (hit.collider != null) {
-				if (hit.collider.gameObject.tag == "Floor") {
-					SpringJoint2D newHook = player.AddComponent<SpringJoint2D> ();
-					newHook.enableCollision = true;
-					newHook.frequency = 1f;
-					newHook.dampingRatio = 0.8f;
-					newHook.connectedAnchor = hit.point;
-					newHook.enabled = true;
+		if (hit.collider != null) {
+			if (hit.collider.gameObject.tag == "Floor") {
+				SpringJoint2D newHook = player.AddComponent<SpringJoint2D> ();
+				newHook.enableCollision = true;
+				newHook.frequency = 1f;
+				newHook.dampingRatio = 0.8f;					
+				newHook.connectedAnchor = hit.point;
+				newHook.enabled = true;
 
-					GameObject.DestroyImmediate (hook);
-					hook = newHook;
-					hookSize = 10;
+				GameObject.DestroyImmediate (hook);
+				hook = newHook;
+				hookSize = 10;
+				myAudioSource.clip = jumpSound;
+				myAudioSource.pitch = 2f;
+				myAudioSource.volume = 0.5f  * EffectsSliderScript.effectsVolume;
+				myAudioSource.Play ();
 				} else {
 				myAudioSource.clip = hookBreak;
+				myAudioSource.pitch = 1f;
 				myAudioSource.volume = 0.1f  * EffectsSliderScript.effectsVolume;
 				myAudioSource.Play ();
 				hookSize = hookSizeMax;
@@ -228,6 +259,8 @@ public class Player : MonoBehaviour {
 			myRigidbody.isKinematic = true;
 			alive = false;
 			mySpriteRenderer.color = new Color (0.5f, 0.5f, 0.5f);
+			deathOverlay.GetComponent<Animator>().ResetTrigger("Respawn");
+			deathText.GetComponent<Animator> ().ResetTrigger ("Respawn");
 			deathOverlay.GetComponent<Animator> ().SetTrigger ("Death");
 			deathText.GetComponent<Animator> ().SetTrigger ("Death");
 		}
@@ -242,10 +275,12 @@ public class Player : MonoBehaviour {
 		mySpriteRenderer.color = new Color (1,1,1);
 		GameObject.DestroyImmediate (hook);
 		*/
+		deathOverlay.GetComponent<Animator>().ResetTrigger("Death");
+		deathText.GetComponent<Animator> ().ResetTrigger ("Death");
 		deathOverlay.GetComponent<Animator> ().SetTrigger ("Respawn");
 		deathText.GetComponent<Animator> ().SetTrigger ("Respawn");
-		SceneManagement.loadLevel ();
-		PointTrackerScript.resetPoints ();
+		sceneScript.loadLevel ();
+		pointScript.resetPoints ();
 		alive = true;
 	}
 

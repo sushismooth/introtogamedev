@@ -5,23 +5,26 @@ using UnityEngine;
 public class Finish : MonoBehaviour {
 
 	GameObject fade;
+	SceneManagement sceneScript;
+	PointTrackerScript pointScript;
 
 	// Use this for initialization
 	void Start () {
 		fade = GameObject.Find ("Fade");
+		sceneScript = GameObject.Find ("SceneManagement").GetComponent<SceneManagement> ();
+		pointScript = GameObject.Find ("Point Tracker").GetComponent<PointTrackerScript> ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
 	}
 
 	void OnTriggerEnter2D(Collider2D collisionInfo){
 		if (collisionInfo.name == "Player" && collisionInfo.GetType() == typeof(CircleCollider2D)) {
-			SceneManagement.level++;
-			SceneManagement.loadLevel ();
+			sceneScript.level++;
+			sceneScript.loadLevel ();
 			//Destroy (this.gameObject);
-			PointTrackerScript.pointsThisLevel = 0;
+			pointScript.pointsThisLevel = 0;
 			fade.GetComponent<Animator> ().SetTrigger("Start");
 		}
 	}

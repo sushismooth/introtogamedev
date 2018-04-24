@@ -6,10 +6,12 @@ public class PointScript : MonoBehaviour {
 
 	public GameObject soundEffect;
 	Animator myAnimator;
+	PointTrackerScript pointScript;
 
 	// Use this for initialization
 	void Start () {
 		myAnimator = GetComponent<Animator> ();
+		pointScript = GameObject.Find ("Point Tracker").GetComponent<PointTrackerScript> ();
 	}
 	
 	// Update is called once per frame
@@ -23,7 +25,7 @@ public class PointScript : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D collisionInfo){
 		if (collisionInfo.name == "Player" && collisionInfo.GetType() == typeof(CircleCollider2D)) {
-			PointTrackerScript.addPoint ();
+			pointScript.addPoint ();
 			Instantiate (soundEffect, transform.position,Quaternion.identity);
 			Destroy (this.gameObject);
 		}

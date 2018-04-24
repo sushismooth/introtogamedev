@@ -6,11 +6,16 @@ public class StartButtonOnClick : MonoBehaviour {
 
 	public GameObject mainMenuPanel;
 	public GameObject inGameUIPanel;
+	SceneManagement sceneScript;
+
+	void Start(){
+		sceneScript = GameObject.Find ("SceneManagement").GetComponent<SceneManagement> ();
+	}
 
 	public void StartGame() {
-		SceneManagement.level = 1;
-		SceneManagement.loadLevel ();
 		mainMenuPanel.SetActive (false);
 		inGameUIPanel.SetActive (true);
+		sceneScript.level = 1;
+		sceneScript.loadLevel ();
 	}
 }
