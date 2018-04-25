@@ -46,7 +46,7 @@ public class SceneManagement : MonoBehaviour {
 	void Update () {
 		if (Player.alive == true) {
 			backgroundMusic.pitch = 1;
-		} else if (level >= 1 && level <= 5 && backgroundMusic.pitch > 0){
+		} else if (level >= 1 && level <= 4 && backgroundMusic.pitch > 0){
 			backgroundMusic.pitch -= Time.deltaTime / 2;
 		}
 	}
