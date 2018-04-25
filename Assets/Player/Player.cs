@@ -22,7 +22,7 @@ public class Player : MonoBehaviour {
 	public Vector2 startPos;
 	bool isOnGround = true;
 	bool isRunning = false;
-	public static bool alive = true;
+	public static bool alive;
 
 	//hook
 	GameObject player;
@@ -68,6 +68,7 @@ public class Player : MonoBehaviour {
 		deathOverlay = GameObject.Find ("DeathOverlay");
 		deathText = GameObject.Find ("DeathText");
 
+		alive = true;
 
 	}
 

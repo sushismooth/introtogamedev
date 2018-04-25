@@ -4,7 +4,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class SceneManagement : MonoBehaviour {
+	Player playerScript;
 	TimerScript timerScript;
+	public AudioSource backgroundMusic;
 	public int minHeight = -100;
 	public int level;
 	public List<string> levelNames = new List<string> ();
@@ -18,6 +20,7 @@ public class SceneManagement : MonoBehaviour {
 	void Awake () {
 		DontDestroyOnLoad (this.gameObject);
 		timerScript = GameObject.Find ("Timer").GetComponent<TimerScript> ();
+		backgroundMusic = GetComponentInChildren<AudioSource>();
 
 		levelNames.Add ("Menu");
 		levelMinHeights.Add (0);
@@ -41,18 +44,23 @@ public class SceneManagement : MonoBehaviour {
 	}
 
 	void Update () {
-		
+		if (Player.alive == true) {
+			backgroundMusic.pitch = 1;
+		} else if (level >= 1 && level <= 5 && backgroundMusic.pitch > 0){
+			backgroundMusic.pitch -= Time.deltaTime / 2;
+		}
+	}
+
+	void checkPlayerAlive(){
 	}
 
 	public void loadLevel (){
-		Debug.Log (level);
-		Debug.Log(levelNames[level]);
 		SceneManager.LoadScene (levelNames [level]);
 		timerScript.resetTimer ();
 		minHeight = levelMinHeights[level];
 
+		Debug.Log (level);
 		//ChangeMusic ();
-		AudioSource backgroundMusic = GameObject.Find("BackgroundMusic").GetComponent<AudioSource> ();
 		switch (level) {
 		case 0:
 			backgroundMusic.clip = MenuBGM;

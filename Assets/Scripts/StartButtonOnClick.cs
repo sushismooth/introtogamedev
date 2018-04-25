@@ -15,6 +15,8 @@ public class StartButtonOnClick : MonoBehaviour {
 	public void StartGame() {
 		mainMenuPanel.SetActive (false);
 		inGameUIPanel.SetActive (true);
+		sceneScript.backgroundMusic.clip = sceneScript.BGM1;
+		sceneScript.backgroundMusic.Play ();
 		sceneScript.level = 1;
 		sceneScript.loadLevel ();
 	}

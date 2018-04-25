@@ -7,19 +7,22 @@ public class OnGameRestart : MonoBehaviour {
 	SceneManagement sceneScript;
 	PointTrackerScript pointScript;
 	TimerScript timerScript;
+	GameObject canvas;
 	// Use this for initialization
 	void Start () {
 		//MainMenuPanel = GameObject.Find ("MainMenuPanel");
-		SceneManagement sceneScript = GameObject.Find ("SceneManagement").GetComponent<SceneManagement> ();
-		pointScript = GameObject.Find ("Point Tracker").GetComponent<PointTrackerScript> ();
-		timerScript = GameObject.Find ("Timer").GetComponent<TimerScript> ();
+		sceneScript = GameObject.Find ("SceneManagement").GetComponent<SceneManagement> ();
+		canvas = GameObject.Find ("Canvas");
+		pointScript = canvas.GetComponentInChildren<PointTrackerScript> ();
+		timerScript = canvas.GetComponentInChildren<TimerScript> ();
+
 
 	}
 	
 	public void OnGameRestartClick(){
+		Destroy (sceneScript.gameObject);
+		Destroy (canvas.gameObject);
 		sceneScript.level = 0;
 		sceneScript.loadLevel ();
-		pointScript.points = 0;
-		timerScript.totalTime = 0;
 	}
 }
